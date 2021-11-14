@@ -29,22 +29,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   CountDownController _controller = CountDownController();
-  int _duration = 0;
+  int _duration = 10;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onTap: () {
-          setState(() async {
-            _duration = await Navigator.push(
+        onTap: () async {
+            final duration = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => SettingPage(),
               ),
             );
-          });
-          _controller.start();
+            print(duration);
+            setState(() {
+              _duration = duration;
+              _controller.restart(duration: _duration);
+            });
           },
         child: Center(
             child: CircularCountDownTimer(
