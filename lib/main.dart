@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'dart:ui';
+import 'setting_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,9 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Circular Countdown Timer Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-      ),
+      theme: _buildShrineTheme(),
       home: MyHomePage(title: 'Circular Countdown Timer'),
     );
   }
@@ -26,131 +26,139 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+
 class _MyHomePageState extends State<MyHomePage> {
   CountDownController _controller = CountDownController();
-  int _duration = 10;
+  int _duration = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title!),
-      ),
-      body: Center(
-          child: CircularCountDownTimer(
-            // Countdown duration in Seconds.
-            duration: _duration,
-
-            // Countdown initial elapsed Duration in Seconds.
-            initialDuration: 0,
-
-            // Controls (i.e Start, Pause, Resume, Restart) the Countdown Timer.
-            controller: _controller,
-
-            // Width of the Countdown Widget.
-            width: MediaQuery
-                .of(context)
-                .size
-                .width / 2,
-
-            // Height of the Countdown Widget.
-            height: MediaQuery
-                .of(context)
-                .size
-                .height / 2,
-
-            // Ring Color for Countdown Widget.
-            ringColor: Colors.grey[300]!,
-
-            // Ring Gradient for Countdown Widget.
-            ringGradient: null,
-
-            // Filling Color for Countdown Widget.
-            fillColor: Colors.purpleAccent[100]!,
-
-            // Filling Gradient for Countdown Widget.
-            fillGradient: null,
-
-            // Background Color for Countdown Widget.
-            backgroundColor: Colors.purple[500],
-
-            // Background Gradient for Countdown Widget.
-            backgroundGradient: null,
-
-            // Border Thickness of the Countdown Ring.
-            strokeWidth: 20.0,
-
-            // Begin and end contours with a flat edge and no extension.
-            strokeCap: StrokeCap.round,
-
-            // Text Style for Countdown Text.
-            textStyle: TextStyle(
-                fontSize: 33.0,
-                color: Colors.white,
-                fontWeight: FontWeight.bold),
-
-            // Format for the Countdown Text.
-            textFormat: CountdownTextFormat.S,
-
-            // Handles Countdown Timer (true for Reverse Countdown (max to 0), false for Forward Countdown (0 to max)).
-            isReverse: false,
-
-            // Handles Animation Direction (true for Reverse Animation, false for Forward Animation).
-            isReverseAnimation: false,
-
-            // Handles visibility of the Countdown Text.
-            isTimerTextShown: true,
-
-            // Handles the timer start.
-            autoStart: false,
-
-            // This Callback will execute when the Countdown Starts.
-            onStart: () {
-              // Here, do whatever you want
-              print('Countdown Started');
-            },
-
-            // This Callback will execute when the Countdown Ends.
-            onComplete: () {
-              // Here, do whatever you want
-              print('Countdown Ended');
-            },
-          )),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 30,
-          ),
-          _button(title: "Start", onPressed: () => _controller.start()),
-          SizedBox(
-            width: 10,
-          ),
-          _button(title: "Pause", onPressed: () => _controller.pause()),
-          SizedBox(
-            width: 10,
-          ),
-          _button(title: "Resume", onPressed: () => _controller.resume()),
-          SizedBox(
-            width: 10,
-          ),
-          _button(
-              title: "Restart",
-              onPressed: () => _controller.restart(duration: _duration))
-        ],
+      body: GestureDetector(
+        onTap: () {
+          setState(() async {
+            _duration = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SettingPage(),
+              ),
+            );
+          });
+          _controller.start();
+          },
+        child: Center(
+            child: CircularCountDownTimer(
+              duration: _duration,
+              initialDuration: 0,
+              controller: _controller,
+              width: 100.0,
+              height: 100.0,
+              ringColor: shrinePink400,
+              ringGradient: null,
+              fillColor: shrinePink50,
+              fillGradient: null,
+              backgroundColor: Colors.white,
+              backgroundGradient: null,
+              strokeWidth: 250.0,
+              strokeCap: StrokeCap.butt,
+              textStyle: TextStyle(
+                  fontSize: 0.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+              textFormat: CountdownTextFormat.S,
+              isReverse: false,
+              isReverseAnimation: false,
+              isTimerTextShown: true,
+              autoStart: false,
+              onStart: () {
+                print('Countdown Started');
+              },
+              onComplete: () {
+                print('Countdown Ended');
+              },
+            )),
       ),
     );
   }
-
-  _button({required String title, VoidCallback? onPressed}) {
-    return Expanded(
-        child: RaisedButton(
-          child: Text(
-            title,
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: onPressed,
-          color: Colors.purple,
-        ));
-  }
 }
+
+
+ThemeData _buildShrineTheme() {
+  final ThemeData base = ThemeData.light();
+  return base.copyWith(
+    colorScheme: _shrineColorScheme,
+    toggleableActiveColor: shrinePink400,
+    accentColor: shrineBrown900,
+    primaryColor: shrinePink100,
+    buttonColor: shrinePink100,
+    scaffoldBackgroundColor: shrineBackgroundWhite,
+    cardColor: shrineBackgroundWhite,
+    textSelectionColor: shrinePink100,
+    errorColor: shrineErrorRed,
+    buttonTheme: const ButtonThemeData(
+      colorScheme: _shrineColorScheme,
+      textTheme: ButtonTextTheme.normal,
+    ),
+    primaryIconTheme: _customIconTheme(base.iconTheme),
+    textTheme: _buildShrineTextTheme(base.textTheme),
+    primaryTextTheme: _buildShrineTextTheme(base.primaryTextTheme),
+    accentTextTheme: _buildShrineTextTheme(base.accentTextTheme),
+    iconTheme: _customIconTheme(base.iconTheme),
+  );
+}
+
+IconThemeData _customIconTheme(IconThemeData original) {
+  return original.copyWith(color: shrineBrown900);
+}
+
+TextTheme _buildShrineTextTheme(TextTheme base) {
+  return base
+      .copyWith(
+    caption: base.caption!.copyWith(
+      fontWeight: FontWeight.w400,
+      fontSize: 14,
+      letterSpacing: defaultLetterSpacing,
+    ),
+    button: base.button!.copyWith(
+      fontWeight: FontWeight.w500,
+      fontSize: 14,
+      letterSpacing: defaultLetterSpacing,
+    ),
+  )
+      .apply(
+    fontFamily: 'Rubik',
+    displayColor: shrineBrown900,
+    bodyColor: shrineBrown900,
+  );
+}
+
+const ColorScheme _shrineColorScheme = ColorScheme(
+  primary: shrinePink400,
+  primaryVariant: shrineBrown900,
+  secondary: shrinePink50,
+  secondaryVariant: shrineBrown900,
+  surface: shrineSurfaceWhite,
+  background: shrineBackgroundWhite,
+  error: shrineErrorRed,
+  onPrimary: shrineBrown900,
+  onSecondary: shrineBrown900,
+  onSurface: shrineBrown900,
+  onBackground: shrineBrown900,
+  onError: shrineSurfaceWhite,
+  brightness: Brightness.light,
+);
+
+const Color shrinePink50 = Color(0xFFFEEAE6);
+const Color shrinePink100 = Color(0xFFFEDBD0);
+const Color shrinePink300 = Color(0xFFFBB8AC);
+const Color shrinePink400 = Color(0xFFEAA4A4);
+
+const Color shrineBrown900 = Color(0xFF442B2D);
+const Color shrineBrown600 = Color(0xFF7D4F52);
+
+const Color shrineErrorRed = Color(0xFFC5032B);
+
+const Color shrineSurfaceWhite = Color(0xFFFFFBFA);
+const Color shrineBackgroundWhite = Colors.white;
+
+const defaultLetterSpacing = 0.03;
